@@ -1,0 +1,102 @@
+{
+  "heroes": [
+    {
+      "id": "edith",
+      "name": "에디스",
+      "generation": "7세대",
+      "type": "방패",
+      "skillDetails": [
+        { "label": "보호/지원", "text": "아군 궁병 받는 피해 20% 감소, 아군 창병 가하는 피해 20% 증가", "badge": "시너지" },
+        { "label": "방패 강화", "text": "방패병 받는 피해 20% 상시 감소 (안정적 전선 유지)", "badge": "탱킹" },
+        { "label": "전군 고무", "text": "전체 아군 부대 HP 25% 증가 (대규모 집결 시 필수 버프)", "badge": "HP 버프" }
+      ],
+      "exclusiveSkill": "수성부대 HP 15% 증가"
+    },
+    {
+      "id": "gato",
+      "name": "가토",
+      "generation": "8세대",
+      "type": "방패",
+      "skillDetails": [
+        { "label": "철벽 방어", "text": "아군 전체 방어력 30% 증가 (8세대 압도적 스탯)", "badge": "방어" },
+        { "label": "수정 실드", "text": "자신 공격력 30% 실드 획득 (궁극적 생존 보장)", "badge": "생존" },
+        { "label": "전의 상실", "text": "적군 전체 부대 공격력 25% 저하 (치명적 공격력 디버프)", "badge": "디버프" }
+      ],
+      "exclusiveSkill": "수성부대 방어력 15% 증가"
+    },
+    {
+      "id": "gordon",
+      "name": "고든",
+      "generation": "7세대",
+      "type": "창병",
+      "skillDetails": [
+        { "label": "독성 공격", "text": "창병 가하는 피해 100% 증가, 중독 적 주는 피해 -20%", "badge": "중독" },
+        { "label": "학살", "text": "창병 주는 피해 150% 증가, 적군 전체 피해량 -30% 감소", "badge": "피해량" },
+        { "label": "약점 노출", "text": "적 방패병 받는 피해 30% 증가, 적 궁병 화력 -30% 저하", "badge": "카운터" }
+      ],
+      "exclusiveSkill": "집결부대 파괴력 15% 증가"
+    },
+    {
+      "id": "sonya",
+      "name": "소냐",
+      "generation": "8세대",
+      "type": "창병",
+      "skillDetails": [
+        { "label": "전군 진격", "text": "전체 아군 부대 주는 피해 20% 상시 증가", "badge": "공격" },
+        { "label": "폭주", "text": "창병 피해 75% 증가, 전체 아군 공격력 25% 상승 (1R 지속)", "badge": "폭딜" },
+        { "label": "심판의 창", "text": "5R마다 피해 250% 증가 및 타깃 1R 기절 (역전의 CC기)", "badge": "기절/CC" }
+      ],
+      "exclusiveSkill": "수성부대 파괴력 15% 증가"
+    },
+    {
+      "id": "miya",
+      "name": "미야",
+      "generation": "3세대",
+      "type": "창병",
+      "skillDetails": [
+        { "label": "약점 간파", "text": "공격 시 50% 확률로 적군이 받는 피해 50% 증가", "badge": "증폭" },
+        { "label": "연쇄 폭발", "text": "공격 시 50% 확률로 해당 피해량 50% 추가 증가", "badge": "랜덤딜" },
+        { "label": "수호", "text": "40% 확률로 아군 전체 부대 받는 피해 50% 감소", "badge": "확률방어" }
+      ],
+      "exclusiveSkill": "집결부대 공격력 15% 증가"
+    },
+    {
+      "id": "bradley",
+      "name": "브레들리",
+      "generation": "7세대",
+      "type": "궁병",
+      "skillDetails": [
+        { "label": "정밀 조준", "text": "전체 아군 부대 공격력 25% 상시 상승", "badge": "공격" },
+        { "label": "병종 파괴", "text": "적 창병 대상 피해 30% 증가, 적 방패병 피해 25% 증가", "badge": "우위" },
+        { "label": "전술 지휘", "text": "4R마다 전체 아군 주는 피해 30% 증가 (2R 지속)", "badge": "폭딜예고" }
+      ],
+      "exclusiveSkill": "수성부대 공격력 15% 증가"
+    },
+    {
+      "id": "hendrick",
+      "name": "헨드릭",
+      "generation": "8세대",
+      "type": "궁병",
+      "skillDetails": [
+        { "label": "갑옷 파괴", "text": "적군 전체 부대 방어력 25% 영구 저하 (방깎의 정석)", "badge": "디버프" },
+        { "label": "방어 전술", "text": "4R마다 전체 아군 방어력 30% 증가 (2R 지속)", "badge": "방어" },
+        { "label": "화력 집중", "text": "3R마다 아군 궁병이 적군 전체에 주는 피해 40% 증가", "badge": "광역딜" }
+      ],
+      "exclusiveSkill": "집결부대 공격력 15% 증가"
+    }
+  ],
+  "recommendations": {
+    "gato-sonya-hendrick": { "title": "8세대 정석 조합 (압도적 스탯 체급)", "ratio": "40 : 20 : 40", "desc": "현재 메타 최고의 순수 스탯 체급 조합입니다. 가토의 광역 디버프와 소냐의 폭딜, 헨드릭의 영구 방깎이 안정적으로 연계됩니다.", "type": "attack" },
+    "gato-miya-hendrick": { "title": "변칙 극강 화력 조합 (확률 극대화)", "ratio": "45 : 10 : 45", "desc": "미야의 피해 증폭 50% 버프가 터지는 순간, 8세대 단일 딜링을 아득히 초월하는 폭발력을 기대할 수 있습니다.", "type": "attack" },
+    "gato-sonya-bradley": { "title": "밸런스형 전천후 공방 조합", "ratio": "50 : 20 : 30", "desc": "브레들리의 상시 전군 공격력 버프와 가토의 실드 탱킹력을 융합하여 대규모 전장의 난전에서 뛰어난 범용성을 보입니다.", "type": "defense" },
+    "gato-miya-bradley": { "title": "로또형 한방 버스트 조합", "ratio": "50 : 10 : 40", "desc": "브레들리의 공업 버프 위에 미야의 랜덤 증폭이 극대화되는 도박형 화력 조합입니다. 난전에서 강력한 변수를 창출합니다.", "type": "attack" },
+    "gato-gordon-hendrick": { "title": "올라운더 지속 디버프 조합", "ratio": "45 : 25 : 30", "desc": "가토의 공격력 약화와 고든의 독성 디버프, 헨드릭의 방어력 영구 저하를 누적시켜 중장기 전선 전반의 붕괴를 유도합니다.", "type": "attack" },
+    "gato-gordon-bradley": { "title": "상성 카운터 억제 조합", "ratio": "50 : 20 : 30", "desc": "고든의 적 방패병 카운터 시너지와 브레들리의 병종 우위 특성을 극대화하여 상대 전방 라인을 빠르게 제압합니다.", "type": "attack" },
+    "edith-sonya-hendrick": { "title": "창병 후방 지원 시너지 조합", "ratio": "50 : 30 : 20", "desc": "에디스의 창병 피해 20% 증가 버프가 소냐의 폭주 공격력과 완벽하게 매칭되어 강력한 전선 돌파력을 선보입니다.", "type": "attack" },
+    "edith-miya-hendrick": { "title": "변칙 시너지 안전 지원 조합", "ratio": "50 : 10 : 40", "desc": "미야의 복불복 증폭 버프를 활용하면서, 동시에 에디스의 아군 궁병 피해 감소 효과로 메인 딜링 라인을 단단히 방어합니다.", "type": "attack" },
+    "edith-miya-bradley": { "title": "더블 화력 보충 조합", "ratio": "55 : 10 : 35", "desc": "에디스의 단단한 전군 HP 고무 효과를 전방 버팀목으로 삼고, 미야와 브레들리가 상호 시너지를 누적하는 안정 지향형 조합입니다.", "type": "attack" },
+    "edith-sonya-bradley": { "title": "최강 공성·수성 요새 조합", "ratio": "60 : 20 : 20", "desc": "에디스와 브레들리의 수성·공성 패시브가 전방위로 중첩되어 요새 수비나 핵심 목표물 주둔 시 철벽 같은 생존력을 자랑합니다.", "type": "defense" },
+    "edith-gordon-hendrick": { "title": "지속 독성 늪 조합", "ratio": "50 : 30 : 20", "desc": "에디스의 창병 버프를 통해 고든의 지속 도트 피해를 가속하며, 헨드릭의 방어력 하락으로 누적 데미지를 폭발시킵니다.", "type": "attack" },
+    "edith-gordon-bradley": { "title": "전선 교란 상성 특화 조합", "ratio": "55 : 25 : 20", "desc": "고든과 브레들리의 다중 상성 파괴 시너지를 활용하여, 상대적으로 까다로운 복합 병종 구도의 적군에 유연하게 대응합니다.", "type": "defense" }
+  }
+}
