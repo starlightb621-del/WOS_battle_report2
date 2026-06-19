@@ -189,7 +189,5 @@
     "magnus-sonya-bradley": { "title": "매그너스 소냐 브레들리", "ratio": "45:30:25", "desc": "매그너스의 공증과 브레들리의 피해 증폭을 통해 창병 딜을 극대화합니다.", "type": "attack" },
     "magnus-fred-bradley": { "title": "매그너스 프레드 브레들리", "ratio": "45:25:30", "desc": "매그너스의 방어 버프와 브레들리의 공버프가 조화된 올라운더 조합입니다.", "type": "attack" }
   }
-   
-}
-  }
+  
 }
