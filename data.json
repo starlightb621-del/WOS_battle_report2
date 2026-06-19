@@ -176,8 +176,7 @@
     "gregory-sonya-hendrick": { "title": "방패-창-궁 황금 밸런스", "ratio": "40 : 30 : 30", "desc": "그레고리의 단단한 전선 구축 후, 헨드릭의 방깎과 소냐의 기절 CC기를 연계하여 상대를 제압.", "type": "defense" },
     "magnus-fred-blanche": { "title": "9-10세대 디버프 폭격 조합", "ratio": "45 : 20 : 35", "desc": "프레드의 적군 파괴력 감소와 매그너스의 방어력을 결합하여 중장기전에서 유리함.", "type": "attack" },
     "edith-freya-seura": { "title": "요새 수호 특화 조합", "ratio": "60 : 20 : 20", "desc": "에디스와 프레야의 수성 특화 패시브를 중첩하여 요새 점거 시 철벽같은 방어력을 자랑함.", "type": "defense" },
-    "gato-fred-blanche": { "title": "압도적 스탯 체급 억제 조합", "ratio": "40 : 25 : 35", "desc": "가토와 프레드의 이중 디버프를 통해 적의 화력을 원천 봉쇄함.", "type": "attack" }
-  
+    "gato-fred-blanche": { "title": "압도적 스탯 체급 억제 조합", "ratio": "40 : 25 : 35", "desc": "가토와 프레드의 이중 디버프를 통해 적의 화력을 원천 봉쇄함.", "type": "attack" },
     "gato-fred-bradley": { "title": "가토 프레드 브레들리", "ratio": "45:20:35", "desc": "가토의 디버프와 프레드의 파괴력 감소, 브레들리의 공업 시너지가 결합된 공방 일체 조합입니다.", "type": "attack" },
     "gato-fred-hendrick": { "title": "가토 프레드 헨드릭", "ratio": "50:15:35", "desc": "헨드릭의 방어력 저하 디버프와 가토의 공깎 시너지가 돋보이는 구성입니다.", "type": "attack" },
     "gato-fred-seura": { "title": "가토 프레드 쇠라", "ratio": "50:25:25", "desc": "쇠라의 피해 감소와 프레드의 파괴력 억제를 조합하여 난전 생존력을 극대화합니다.", "type": "defense" },
