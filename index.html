@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOS 영웅 조합 및 병종 비율 분석기</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        // Babel Standalone 설정을 조정하여 컴파일 타임 에러 방지
+        Babel.registerPreset('classic-react', {
+            presets: [
+                [Babel.availablePresets['react'], { runtime: 'classic' }]
+            ]
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=100;400;700;900&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#F0F7FF] text-slate-800">
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="classic-react">
+        const { useState, useEffect } = React;
+
+        // --- 재사용 가능한 SVG 아이콘 컴포넌트 ---
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            const icons = {
+                shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />,
+                sword: <path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4" />,
+                zap: <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />,
+                snowflake: <path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4" />,
+                check: <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />,
+                checkInner: <polyline points="22 4 12 14.01 9 11.01" />,
+                users: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />,
+                trending: <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />,
+                trendingArrow: <polyline points="17 6 23 6 23 12" />,
+                shieldCheck: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10M9 12l2 2 4-4" />,
+                info: (
+                    <>
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 16v-4" />
+                        <path d="M12 8h.01" />
+                    </>
+                )
+            };
+
+            return (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {icons[name]}
+                    {name === 'check' && icons.checkInner}
+                    {(name === 'trending') && icons.trendingArrow}
+                </svg>
+            );
+        };
+
+        const BowIcon = ({ className = "w-5 h-5" }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M10 22L22 10" />
+                <path d="M2 22l1-11c.01-2.209 1.791-4 4-4h11" />
+                <path d="M22 2l-11 1c-2.209.01-4 1.791-4 4v11" />
+            </svg>
+        );
+
+        // --- JSON 파일이 없거나 로컬 CORS 제한으로 로드할 수 없을 때 작동하는 안전용 폴백(Fallback) 데이터 ---
+        const FALLBACK_HEROES = [
+            { id: 'edith', name: '에디스 (로컬)', generation: '7세대', type: '방패', 
+              skillDetails: [
+                { label: '보호/지원', text: '아군 궁병 받는 피해 20% 감소, 아군 창병 가하는 피해 20% 증가', badge: '시너지' },
+                { label: '방패 강화', text: '방패병 받는 피해 20% 상시 감소 (안정적 전선 유지)', badge: '탱킹' },
+                { label: '전군 고무', text: '전체 아군 부대 HP 25% 증가 (대규모 집결 시 필수 버프)', badge: 'HP 버프' }
+              ], exclusiveSkill: '수성부대 HP 15% 증가' },
+            { id: 'gato', name: '가토 (로컬)', generation: '8세대', type: '방패', 
+              skillDetails: [
+                { label: '철벽 방어', text: '아군 전체 방어력 30% 증가 (8세대 압도적 스탯)', badge: '방어' },
+                { label: '수정 실드', text: '자신 공격력 30% 실드 획득 (궁극적 생존 보장)', badge: '생존' },
+                { label: '전의 상실', text: '적군 전체 부대 공격력 25% 저하 (치명적 공격력 디버프)', badge: '디버프' }
+              ], exclusiveSkill: '수성부대 방어력 15% 증가' },
+            { id: 'gordon', name: '고든 (로컬)', generation: '7세대', type: '창병', 
+              skillDetails: [
+                { label: '독성 공격', text: '창병 가하는 피해 100% 증가, 중독 적 주는 피해 -20%', badge: '중독' },
+                { label: '학살', text: '창병 주는 피해 150% 증가, 적군 전체 피해량 -30% 감소', badge: '피해량' },
+                { label: '약점 노출', text: '적 방패병 받는 피해 30% 증가, 적 궁병 화력 -30% 저하', badge: '카운터' }
+              ], exclusiveSkill: '집결부대 파괴력 15% 증가' },
+            { id: 'sonya', name: '소냐 (로컬)', generation: '8세대', type: '창병', 
+              skillDetails: [
+                { label: '전군 진격', text: '전체 아군 부대 주는 피해 20% 상시 증가', badge: '공격' },
+                { label: '폭주', text: '창병 피해 75% 증가, 전체 아군 공격력 25% 상승 (1R 지속)', badge: '폭딜' },
+                { label: '심판의 창', text: '5R마다 피해 250% 증가 및 타깃 1R 기절 (역전의 CC기)', badge: '기절/CC' }
+              ], exclusiveSkill: '수성부대 파괴력 15% 증가' },
+            { id: 'miya', name: '미야 (로컬)', generation: '3세대', type: '창병', 
+              skillDetails: [
+                { label: '약점 간파', text: '공격 시 50% 확률로 적군이 받는 피해 50% 증가', badge: '증폭' },
+                { label: '연쇄 폭발', text: '공격 시 50% 확률로 해당 피해량 50% 추가 증가', badge: '랜덤딜' },
+                { label: '수호', text: '40% 확률로 아군 전체 부대 받는 피해 50% 감소', badge: '확률방어' }
+              ], exclusiveSkill: '집결부대 공격력 15% 증가' },
+            { id: 'bradley', name: '브레들리 (로컬)', generation: '7세대', type: '궁병', 
+              skillDetails: [
+                { label: '정밀 조준', text: '전체 아군 부대 공격력 25% 상시 상승', badge: '공격' },
+                { label: '병종 파괴', text: '적 창병 대상 피해 30% 증가, 적 방패병 피해 25% 증가', badge: '우위' },
+                { label: '전술 지휘', text: '4R마다 전체 아군 주는 피해 30% 증가 (2R 지속)', badge: '폭딜예고' }
+              ], exclusiveSkill: '수성부대 공격력 15% 증가' },
+            { id: 'hendrick', name: '헨드릭 (로컬)', generation: '8세대', type: '궁병', 
+              skillDetails: [
+                { label: '갑옷 파괴', text: '적군 전체 부대 방어력 25% 영구 저하 (방깎의 정석)', badge: '디버프' },
+                { label: '방어 전술', text: '4R마다 전체 아군 방어력 30% 증가 (2R 지속)', badge: '방어' },
+                { label: '화력 집중', text: '3R마다 아군 궁병이 적군 전체에 주는 피해 40% 증가', badge: '광역딜' }
+              ], exclusiveSkill: '집결부대 공격력 15% 증가' }
+        ];
+
+        const FALLBACK_RECOMMENDATIONS = {
+            'gato-sonya-hendrick': { title: '8세대 정석 조합 (압도적 스탯 체급)', ratio: '40 : 20 : 40', desc: '현재 메타 최고의 순수 스탯 체급 조합입니다. 가토의 광역 디버프와 소냐의 폭딜, 헨드릭의 영구 방깎이 안정적으로 연계됩니다.', type: 'attack' },
+            'gato-miya-hendrick': { title: '변칙 극강 화력 조합 (확률 극대화)', ratio: '45 : 10 : 45', desc: '미야의 피해 증폭 50% 버프가 터지는 순간, 8세대 단일 딜링을 아득히 초월하는 폭발력을 기대할 수 있습니다.', type: 'attack' },
+            'gato-sonya-bradley': { title: '밸런스형 전천후 공방 조합', ratio: '50 : 20 : 30', desc: '브레들리의 상시 전군 공격력 버프와 가토의 실드 탱킹력을 융합하여 대규모 전장의 난전에서 뛰어난 범용성을 보입니다.', type: 'defense' },
+            'gato-miya-bradley': { title: '로또형 한방 버스트 조합', ratio: '50 : 10 : 40', desc: '브레들리의 공업 버프 위에 미야의 랜덤 증폭이 극대화되는 도박형 화력 조합입니다. 난전에서 강력한 변수를 창출합니다.', type: 'attack' },
+            'gato-gordon-hendrick': { title: '올라운더 지속 디버프 조합', ratio: '45 : 25 : 30', desc: '가토의 공격력 약화와 고든의 독성 디버프, 헨드릭의 방어력 영구 저하를 누적시켜 중장기 전선 전반의 붕괴를 유도합니다.', type: 'attack' },
+            'gato-gordon-bradley': { title: '상성 카운터 억제 조합', ratio: '50 : 20 : 30', desc: '고든의 적 방패병 카운터 시너지와 브레들리의 병종 우위 특성을 극대화하여 상대 전방 라인을 빠르게 제압합니다.', type: 'attack' },
+            'edith-sonya-hendrick': { title: '창병 후방 지원 시너지 조합', ratio: '50 : 30 : 20', desc: '에디스의 창병 피해 20% 증가 버프가 소냐의 폭주 공격력과 완벽하게 매칭되어 강력한 전선 돌파력을 선보입니다.', type: 'attack' },
+            'edith-miya-hendrick': { title: '변칙 시너지 안전 지원 조합', ratio: '50 : 10 : 40', desc: '미야의 복불복 증폭 버프를 활용하면서, 동시에 에디스의 아군 궁병 피해 감소 효과로 메인 딜링 라인을 단단히 방어합니다.', type: 'attack' },
+            'edith-miya-bradley': { title: '더블 화력 보충 조합', ratio: '55 : 10 : 35', desc: '에디스의 단단한 전군 HP 고무 효과를 전방 버팀목으로 삼고, 미야와 브레들리가 상호 시너지를 누적하는 안정 지향형 조합입니다.', type: 'attack' },
+            'edith-sonya-bradley': { title: '최강 공성·수성 요새 조합', ratio: '60 : 20 : 20', desc: '에디스와 브레들리의 수성·공성 패시브가 전방위로 중첩되어 요새 수비나 핵심 목표물 주둔 시 철벽 같은 생존력을 자랑합니다.', type: 'defense' },
+            'edith-gordon-hendrick': { title: '지속 독성 늪 조합', ratio: '50 : 30 : 20', desc: '에디스의 창병 버프를 통해 고든의 지속 도트 피해를 가속하며, 헨드릭의 방어력 하락으로 누적 데미지를 폭발시킵니다.', type: 'attack' },
+            'edith-gordon-bradley': { title: '전선 교란 상성 특화 조합', ratio: '55 : 25 : 20', desc: '고든과 브레들리의 다중 상성 파괴 시너지를 활용하여, 상대적으로 까다로운 복합 병종 구도의 적군에 유연하게 대응합니다.', type: 'defense' }
+        };
+
+        const App = () => {
+            const [selected, setSelected] = useState({ 방패: 'gato', 창병: 'sonya', 궁병: 'hendrick' });
+            const [heroes, setHeroes] = useState([]);
+            const [recommendations, setRecommendations] = useState({});
+            const [isLoading, setIsLoading] = useState(true);
+            const [isUsingFallback, setIsUsingFallback] = useState(false);
+
+            // 컴포넌트 마운트 시 외부 json 파일을 비동기로 불러옵니다.
+            useEffect(() => {
+                fetch('data.json')
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
+                    })
+                    .then(data => {
+                        setHeroes(data.heroes || []);
+                        setRecommendations(data.recommendations || {});
+                        setIsLoading(false);
+                    })
+                    .catch(err => {
+                        console.warn('data.json 파일을 불러오지 못했습니다. 로컬 수동 실행 상황이거나 CORS 방지 상태이므로 내장 안전 데이터를 사용합니다.', err);
+                        // JSON 호출 실패 시 미리 마련해둔 로컬 폴백 데이터를 대입
+                        setHeroes(FALLBACK_HEROES);
+                        setRecommendations(FALLBACK_RECOMMENDATIONS);
+                        setIsUsingFallback(true);
+                        setIsLoading(false);
+                    });
+            }, []);
+
+            const currentComboKey = `${selected.방패}-${selected.창병}-${selected.궁병}`;
+            const currentRecommendation = recommendations[currentComboKey];
+
+            const getBadgeClass = (label) => {
+                const map = {
+                    '시너지': 'bg-blue-100 text-blue-600 border-blue-200',
+                    '탱킹': 'bg-slate-100 text-slate-600 border-slate-200',
+                    '버프': 'bg-indigo-100 text-indigo-600 border-indigo-200',
+                    '방어': 'bg-emerald-100 text-emerald-600 border-emerald-200',
+                    '생존': 'bg-teal-100 text-teal-600 border-teal-200',
+                    '디버프': 'bg-amber-100 text-amber-600 border-amber-200',
+                    '피해량': 'bg-rose-100 text-rose-600 border-rose-200',
+                    '폭딜': 'bg-orange-100 text-orange-600 border-orange-200',
+                    '기절/CC': 'bg-purple-100 text-purple-600 border-purple-200',
+                    '증폭': 'bg-pink-100 text-pink-600 border-pink-200',
+                    '공격': 'bg-blue-100 text-blue-600 border-blue-200'
+                };
+                return map[label] || 'bg-slate-100 text-slate-500 border-slate-200';
+            };
+
+            const handleSelectHero = (type, heroId) => {
+                setSelected(prev => {
+                    const next = Object.assign({}, prev);
+                    next[type] = heroId;
+                    return next;
+                });
+            };
+
+            if (isLoading) {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC]">
+                        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p className="text-slate-600 font-bold">영웅 및 시너지 데이터 로딩 중...</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 relative overflow-hidden bg-[#F8FAFC]">
+                    <div className="max-w-6xl mx-auto relative z-10">
+                        
+                        {isUsingFallback && (
+                            <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center gap-3 text-amber-800 text-xs md:text-sm shadow-sm">
+                                <Icon name="info" className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                                <div>
+                                    <span className="font-black">시스템 알림:</span> 현재 로컬 미리보기 CORS 제한으로 인해 내장 백업 데이터를 표시 중입니다. 웹서버 환경이나 빌드 환경에 배포 시 <code className="bg-amber-100 px-1 py-0.5 rounded font-mono">data.json</code> 파일로부터 실시간으로 데이터가 정상 fetch됩니다.
+                                </div>
+                            </div>
+                        )}
+
+                        <header className="mb-10 text-center">
+                            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-600 text-white text-xs font-bold mb-4 shadow-lg shadow-blue-200">
+                                <Icon name="snowflake" className="w-3 h-3 animate-spin-slow" />
+                                2026 GOM 연맹 전략분석 센터
+                            </div>
+                            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">WOS 영웅 조합 분석기</h1>
+                            <p className="text-blue-600 font-bold italic">7-8세대 영웅 최적 시너지 및 병종 비율 제안</p>
+                        </header>
+
+                        {/* 영웅 선택 섹션 */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                            {['방패', '창병', '궁병'].map((type) => (
+                                <div key={type} className="bg-white p-6 rounded-3xl shadow-xl border border-slate-100">
+                                    <div className="flex items-center gap-2 mb-5 font-black text-xl text-slate-800">
+                                        {type === '방패' ? <Icon name="shield" className="text-blue-500 w-5 h-5" /> : type === '창병' ? <Icon name="sword" className="text-cyan-500 w-5 h-5" /> : <BowIcon className="text-indigo-500 w-5 h-5" />}
+                                        {type} 영웅
+                                    </div>
+                                    <div className="space-y-3">
+                                        {heroes.filter(h => h.type === type).map((hero) => (
+                                            <button key={hero.id} onClick={() => handleSelectHero(type, hero.id)}
+                                                className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${selected[type] === hero.id ? 'border-blue-500 bg-blue-50 shadow-md transform scale-[1.02]' : 'border-slate-100 bg-white hover:border-blue-200'}`}>
+                                                <div className="text-left">
+                                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md mb-1 inline-block border ${hero.generation.includes('8') ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-50 text-slate-500 border-slate-200'}`}>{hero.generation}</span>
+                                                    <span className="font-black text-lg block text-slate-800">{hero.name}</span>
+                                                </div>
+                                                {selected[type] === hero.id && <Icon name="check" className="text-blue-600 w-5 h-5" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* 분석 결과 카드 */}
+                        {currentRecommendation ? (
+                            <div className={`rounded-[2rem] p-1 shadow-2xl mb-10 transition-all duration-500 ${currentRecommendation.type === 'attack' ? 'bg-gradient-to-br from-rose-500 to-orange-500' : 'bg-gradient-to-br from-emerald-500 to-teal-500'}`}>
+                                <div className="bg-white rounded-[1.8rem] p-8">
+                                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 border-b pb-8">
+                                        <div className="text-center md:text-left">
+                                            <div className={`inline-flex px-4 py-1.5 rounded-full text-xs font-black mb-3 ${currentRecommendation.type === 'attack' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                                                {currentRecommendation.type === 'attack' ? '공격형 전략' : '수비형 전략'}
+                                            </div>
+                                            <h2 className="text-3xl font-black text-slate-900 leading-tight">{currentRecommendation.title}</h2>
+                                        </div>
+                                        <div className={`px-8 py-5 rounded-[1.5rem] text-center min-w-[240px] border ${currentRecommendation.type === 'attack' ? 'bg-rose-50 border-rose-100' : 'bg-emerald-50 border-emerald-100'}`}>
+                                            <p className="text-xs text-slate-500 font-bold mb-2 uppercase tracking-widest">권장 병종 비율 (보:창:궁)</p>
+                                            <p className={`text-4xl font-black ${currentRecommendation.type === 'attack' ? 'text-rose-600' : 'text-emerald-600'}`}>{currentRecommendation.ratio}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4">
+                                            <Icon name="trending" className={currentRecommendation.type === 'attack' ? "text-rose-600 w-6 h-6 flex-shrink-0" : "text-emerald-600 w-6 h-6 flex-shrink-0"} />
+                                            <div><p className="font-black text-slate-800 mb-1">전략 포인트</p><p className="text-slate-600 text-sm leading-relaxed">{currentRecommendation.desc}</p></div>
+                                        </div>
+                                        <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 flex gap-4">
+                                            <Icon name="shieldCheck" className="text-blue-600 w-6 h-6 flex-shrink-0" />
+                                            <div><p className="font-black text-blue-900 mb-1">매치업 상성 Tip</p><p className="text-blue-700 text-sm leading-relaxed tracking-tight">궁병은 보병에게 강하고, 보병은 창병에게 강합니다! 적군의 조합을 상성으로 찍어 누르되, 후방 화력인 궁병 라인이 노출되지 않도록 전방 방패병 비율 밸런스를 항상 유지하세요.</p></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-slate-100 p-10 rounded-[2rem] text-center mb-10 border-2 border-dashed border-slate-200">
+                                <p className="text-slate-500 font-bold text-xl italic">데이터가 없는 조합입니다. 영웅을 다시 선택해 주세요.</p>
+                            </div>
+                        )}
+
+                        {/* 상세 스킬 분석 테이블 */}
+                        <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-100 mb-10">
+                            <div className="bg-slate-900 text-white p-6 font-black text-xl flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Icon name="users" className="text-blue-400 w-6 h-6" /> 영웅 스킬 분석
+                                </div>
+                                <div className="hidden md:flex text-[10px] font-normal text-slate-400 items-center gap-1 bg-slate-800 px-3 py-1.5 rounded-full">
+                                    <Icon name="info" className="w-3 h-3" /> 수치는 영웅 레벨 80, 스킬 MAX 기준 시뮬레이션입니다
+                                </div>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse min-w-[900px]">
+                                    <thead>
+                                        <tr className="bg-slate-50 border-b border-slate-100">
+                                            <th className="p-5 font-black text-slate-500 text-xs uppercase tracking-wider w-[18%]">영웅 정보</th>
+                                            <th className="p-5 font-black text-slate-400 text-xs uppercase tracking-wider w-[21%]">원정 스킬 01</th>
+                                            <th className="p-5 font-black text-slate-400 text-xs uppercase tracking-wider w-[21%]">원정 스킬 02</th>
+                                            <th className="p-5 font-black text-slate-400 text-xs uppercase tracking-wider w-[21%]">원정 스킬 03</th>
+                                            <th className="p-5 font-black text-blue-600 text-xs uppercase tracking-wider w-[19%]">전용 무기 스킬</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {['방패', '창병', '궁병'].map((type) => {
+                                            const hero = heroes.find(h => h.id === selected[type]);
+                                            if (!hero) return null;
+                                            return (
+                                                <tr key={type} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                                    <td className="p-6 align-top">
+                                                        <div className="flex flex-col gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="p-1.5 rounded-lg border bg-white shadow-sm">
+                                                                    {type === '방패' ? <Icon name="shield" className="w-4 h-4 text-blue-500" /> : type === '창병' ? <Icon name="sword" className="w-4 h-4 text-cyan-500" /> : <BowIcon className="w-4 h-4 text-indigo-500" />}
+                                                                </div>
+                                                                <span className="font-black text-lg text-slate-900">{hero.name}</span>
+                                                            </div>
+                                                            <div className="flex gap-1.5">
+                                                                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold border border-slate-200">{hero.generation}</span>
+                                                                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold border ${type === '방패' ? 'bg-blue-100 text-blue-600 border-blue-200' : type === '창병' ? 'bg-cyan-100 text-cyan-600 border-cyan-200' : 'bg-indigo-100 text-indigo-600 border-indigo-200'}`}>{type}</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    {hero.skillDetails.map((skill, i) => (
+                                                        <td key={i} className="p-6 align-top">
+                                                            <div className="flex flex-col gap-2">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-black border uppercase ${getBadgeClass(skill.badge)}`}>{skill.badge}</span>
+                                                                    <span className="text-[11px] font-black text-slate-400 tracking-tighter uppercase">{skill.label}</span>
+                                                                </div>
+                                                                <div className="text-[13px] leading-relaxed text-slate-700 font-medium bg-white/50 p-2 rounded-lg border border-slate-50">
+                                                                    {skill.text.split(/(\d+%|-?\d+%)/).map((part, idx) => 
+                                                                        /(\d+%|-?\d+%)/.test(part) ? <span key={idx} className="text-blue-600 font-black">{part}</span> : part
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    ))}
+                                                    <td className="p-6 align-top">
+                                                        <div className={`p-4 rounded-2xl border-2 flex flex-col gap-1.5 ${hero.exclusiveSkill.includes('수성') ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-rose-50 text-rose-800 border-rose-100'}`}>
+                                                            <div className="flex items-center gap-1.5 mb-1 opacity-70">
+                                                                <Icon name="zap" className="w-3.5 h-3.5" />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">Synergy Effect</span>
+                                                            </div>
+                                                            <p className="text-[13px] font-black leading-snug italic">
+                                                                {hero.exclusiveSkill.split(/(\d+%)/).map((part, idx) => 
+                                                                    /(\d+%)/.test(part) ? <span key={idx} className="underline underline-offset-2">{part}</span> : part
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* 푸터 */}
+                        <div className="bg-slate-900 rounded-[2.5rem] p-8 text-center text-white mb-10 shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-full h-full bg-blue-600/10 transform -skew-x-12 translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></div>
+                            <p className="text-2xl font-black mb-2 relative z-10 uppercase tracking-tighter">Win with Strategy, Overcome with Power</p>
+                            <p className="text-blue-400 font-bold relative z-10 italic">2026 GOM 연맹 전략분석 - Produced by 판다곰</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
