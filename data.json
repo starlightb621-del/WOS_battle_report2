@@ -25,6 +25,30 @@
       "exclusiveSkill": "수성부대 방어력 15% 증가"
     },
     {
+      "id": "magnus",
+      "name": "매그너스",
+      "generation": "9세대",
+      "type": "방패",
+      "skillDetails": [
+        { "label": "수호의 서막", "text": "방패병 받는 피해 25% 상시 감소 (난전 생존력 극대화)", "badge": "탱킹" },
+        { "label": "전군 고무", "text": "전체 아군 부대 공격력 및 방어력 30% 증가", "badge": "방어" },
+        { "label": "철옹성 시너지", "text": "아군 창병 및 궁병이 가하는 피해 15% 상시 증가", "badge": "시너지" }
+      ],
+      "exclusiveSkill": "수성부대 HP 15% 증가"
+    },
+    {
+      "id": "gregory",
+      "name": "그레고리",
+      "generation": "10세대",
+      "type": "방패",
+      "skillDetails": [
+        { "label": "황금 장막", "text": "아군 전체 부대 치명타 확률 20% 증가", "badge": "버프" },
+        { "label": "불굴의 의지", "text": "방패병 받는 피해 30% 감소 및 피해 반사 15% 획득", "badge": "생존" },
+        { "label": "전술적 도발", "text": "적군 전체 부대 공격력 및 파괴력 30% 영구 감소", "badge": "디버프" }
+      ],
+      "exclusiveSkill": "수성부대 파괴력 15% 증가"
+    },
+    {
       "id": "gordon",
       "name": "고든",
       "generation": "7세대",
@@ -61,6 +85,30 @@
       "exclusiveSkill": "집결부대 공격력 15% 증가"
     },
     {
+      "id": "freya",
+      "name": "프레야",
+      "generation": "9세대",
+      "type": "창병",
+      "skillDetails": [
+        { "label": "발키리의 분노", "text": "창병 가하는 피해 120% 증가 및 치명타 피해 25% 증가", "badge": "폭딜" },
+        { "label": "전의 분쇄", "text": "적군 전체 가하는 피해 25% 감소 (광역 공격 저하)", "badge": "디버프" },
+        { "label": "돌풍 전술", "text": "공격 시 45% 확률로 아군 전체 부대 피해량 40% 증가", "badge": "증폭" }
+      ],
+      "exclusiveSkill": "수성부대 방어력 15% 증가"
+    },
+    {
+      "id": "fred",
+      "name": "프레드",
+      "generation": "10세대",
+      "type": "창병",
+      "skillDetails": [
+        { "label": "정밀 척살", "text": "창병 치명타 피해 60% 증가 및 상성 피해 20% 추가", "badge": "폭딜" },
+        { "label": "파괴의 장막", "text": "적군 전체 파괴력 및 방어력 30% 영구 감소", "badge": "디버프" },
+        { "label": "맹렬한 가시", "text": "5R마다 피해 300% 증가 및 타깃 적군 2R 기절", "badge": "기절/CC" }
+      ],
+      "exclusiveSkill": "집결부대 공격력 15% 증가"
+    },
+    {
       "id": "bradley",
       "name": "브레들리",
       "generation": "7세대",
@@ -83,6 +131,30 @@
         { "label": "화력 집중", "text": "3R마다 아군 궁병이 적군 전체에 주는 피해 40% 증가", "badge": "광역딜" }
       ],
       "exclusiveSkill": "집결부대 공격력 15% 증가"
+    },
+    {
+      "id": "seura",
+      "name": "쇠라",
+      "generation": "9세대",
+      "type": "궁병",
+      "skillDetails": [
+        { "label": "수호의 낙인", "text": "아군 전체 부대 받는 피해 25% 상시 감소", "badge": "방어" },
+        { "label": "태양의 오라", "text": "4R마다 아군 전체 부대 손실 체력의 25%를 즉시 회복", "badge": "생존" },
+        { "label": "일제 사격", "text": "궁병 공격력 40% 증가 및 방어 관통 15% 획득", "badge": "공격" }
+      ],
+      "exclusiveSkill": "수성부대 공격력 15% 증가"
+    },
+    {
+      "id": "blanche",
+      "name": "블랑쉬",
+      "generation": "10세대",
+      "type": "궁병",
+      "skillDetails": [
+        { "label": "혹한의 숨결", "text": "적군 전체 부대 방어력 및 원거리 피해 저항 30% 영구 하락", "badge": "디버프" },
+        { "label": "눈꽃의 가시", "text": "적 창병 대상 피해 35% 증가 (상성 무력화 저격)", "badge": "우위" },
+        { "label": "서리 폭격", "text": "3R마다 전체 아군 주는 피해 35% 증가 (2R 지속)", "badge": "증폭" }
+      ],
+      "exclusiveSkill": "집결부대 파괴력 15% 증가"
     }
   ],
   "recommendations": {
@@ -97,8 +169,7 @@
     "edith-miya-bradley": { "title": "더블 화력 보충 조합", "ratio": "55 : 10 : 35", "desc": "에디스의 단단한 전군 HP 고무 효과를 전방 버팀목으로 삼고, 미야와 브레들리가 상호 시너지를 누적하는 안정 지향형 조합입니다.", "type": "attack" },
     "edith-sonya-bradley": { "title": "최강 공성·수성 요새 조합", "ratio": "60 : 20 : 20", "desc": "에디스와 브레들리의 수성·공성 패시브가 전방위로 중첩되어 요새 수비나 핵심 목표물 주둔 시 철벽 같은 생존력을 자랑합니다.", "type": "defense" },
     "edith-gordon-hendrick": { "title": "지속 독성 늪 조합", "ratio": "50 : 30 : 20", "desc": "에디스의 창병 버프를 통해 고든의 지속 도트 피해를 가속하며, 헨드릭의 방어력 하락으로 누적 데미지를 폭발시킵니다.", "type": "attack" },
-    "edith-gordon-bradley": { "title": "전선 교란 상성 특화 조합", "ratio": "55 : 25 : 20", "desc": "고든과 브레들리의 다중 상성 파괴 시너지를 활용하여, 상대적으로 까다로운 복합 병종 구도의 적군에 유연하게 대응합니다.", "type": "defense" }
-    "gato-sonya-hendrick": { "title": "8세대 정석 조합", "ratio": "40 : 20 : 40", "desc": "가토의 디버프와 헨드릭의 방깎을 활용한 고효율 조합.", "type": "attack" },
+    "edith-gordon-bradley": { "title": "전선 교란 상성 특화 조합", "ratio": "55 : 25 : 20", "desc": "고든과 브레들리의 다중 상성 파괴 시너지를 활용하여, 상대적으로 까다로운 복합 병종 구도의 적군에 유연하게 대응합니다.", "type": "defense" },
     "magnus-freya-blanche": { "title": "9-10세대 완성형 올라운더", "ratio": "40 : 30 : 30", "desc": "매그너스의 전체 공증, 프레야의 공깎, 블랑쉬의 파괴력 버프가 조화된 최신 메타 조합.", "type": "attack" },
     "gregory-freya-blanche": { "title": "10세대 치명타 극딜 조합", "ratio": "35 : 30 : 35", "desc": "그레고리의 치명타 확률 버프와 블랑쉬의 상성 저격이 결합되어 폭발적인 공격력을 보임.", "type": "attack" },
     "magnus-sonya-seura": { "title": "9세대 시너지 방어 전술", "ratio": "50 : 20 : 30", "desc": "매그너스의 방어 시너지와 쇠라의 피해 감소를 섞어 난전 생존력을 극대화함.", "type": "defense" },
